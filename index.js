@@ -5,6 +5,7 @@ var express = require("express");
 const WS_MODULE = require("ws");
 const http = require("http");
 require('dotenv').config()
+const qs = require('qs');
 
 const app = express();
 //app.use(express.static(__dirname + '/public'));
@@ -15,6 +16,35 @@ const port = process.env.PORT || 3000;
 
 app.get("/hello", (req, res) => {
   res.send("hello world");
+});
+
+app.post("/api/StreamData", (req, res) => {
+  console.log("id stream",req);
+
+  var axios = require('axios');
+
+  var data = qs.stringify({
+    "id": req.body.id
+  });
+
+  var config = {
+    method: 'post',
+    url: 'https://bogreward.herokuapp.com/StreamData',
+    headers: { 
+      'Content-Type': 'application/x-www-form-urlencoded'
+      },
+    data : data
+  };
+
+  axios(config)
+  .then(function (response) {
+    console.log(JSON.stringify(response.data));
+    res.send(JSON.stringify(response.data));
+  })
+  .catch(function (error) {
+    console.log(error);
+    res.send(error);
+  });
 });
 
 const server = http.createServer(app);

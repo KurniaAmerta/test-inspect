@@ -62,12 +62,32 @@
   <h4 class="text-white" id="notFoundText"></h4>
 </div>
 </br>
+<div id="myModal" class="modal" tabindex="-1" role="dialog">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title"><strong>MATCH INFO</strong></h5>
+        <button type="button" class="close btn btn-outline-primary" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body">
+        <p>The Match has ended</p>
+      </div>
+      <div class="modal-footer">
+        <!-- <a id="myHref" href=>Back to Bracket</a> -->
+        <a id="myHref"><button class="btn btn-outline-primary">Back to Bracket</button></a>
+      </div>
+    </div>
+  </div>
+</div>
 <center>
   <img id="DisplayImg" src="" width=45% />
 </center>
   <canvas id="canvas" />
 
 <script type="text/javascript">
+
   let _id = window.location.pathname.split('/')[1];
   var settings = {
   "url": "https://bogreward.herokuapp.com/StreamData",
@@ -80,19 +100,45 @@
     "id": _id
   }),
 };
+  let tourIdTemp = _id;
+  let linkurl;
+  var interval = setInterval(function(){
+    $.ajax(settings).done(function (response) {
+      if(!response.isDeleted){
+        console.log(response);
+        document.getElementById("title").innerHTML = "Created by "+response.creator;
+        document.getElementById("stage").innerHTML = "Stage "+response.stage;
+        document.getElementById("versus1").innerHTML = response.player[0];
+        document.getElementById("versus2").innerHTML = response.player[1];
+        document.getElementById("notFoundText").innerHTML = "";
+        if(response.isWin!=null){
+          console.log("TRUEE");
+          $("#myHref").attr("href", "https://bog-inspectator-hmh449p7c-kurniaamerta.vercel.app/match/"+response.isWin);
+          if(response.isWin!==undefined) tourIdTemp=response.isWin
+          
+          $( "#myModal" ).show();
+          clearInterval(interval);
+          //window.open("https://bog-inspectator-9jd12ieeo-kurniaamerta.vercel.app/match/"+response.isWin) 
+        }
+      }
+      
+      else{
+        $("#myHref").attr("href", "https://bog-inspectator-hmh449p7c-kurniaamerta.vercel.app/match/complete"+tourIdTemp);
+        $( "#myModal" ).show();
+        //window.open("https://bog-inspectator-9jd12ieeo-kurniaamerta.vercel.app/matchcomplete"+tourIdTemp)
+        clearInterval(interval);
+      }
+    }).fail(function() {
+      console.log( "error" );
+      document.getElementById("notFoundText").innerHTML = "Match not Found or The Match has Ended";
+    });
+  }, 5000);
 
-$.ajax(settings).done(function (response) {
-  console.log(response);
-  document.getElementById("title").innerHTML = "Created by "+response.creator;
-  document.getElementById("stage").innerHTML = "Stage "+response.stage;
-  document.getElementById("versus1").innerHTML = response.player[0];
-  document.getElementById("versus2").innerHTML = response.player[1];
-  document.getElementById("notFoundText").innerHTML = "";
-}).fail(function() {
-  console.log( "error" );
-  document.getElementById("notFoundText").innerHTML = "Match not Found or The Match has Ended";
-});
   let mute = true;
+
+  function CloseModal(){
+
+  }
 
   function StopLoading(){
     document.getElementById("loading").style.display = "none";
@@ -229,6 +275,7 @@ $.ajax(settings).done(function (response) {
 
     ws.addEventListener('open', (event) => {
       RegisterNetworkType();
+      //setInterval(processMessage, 0.005);
       console.log("**connected to server");
     });
 
@@ -242,20 +289,11 @@ $.ajax(settings).done(function (response) {
       ResetButtons();
     }
 
-    function MessageReceived(evt){
-      // console.log("evt",evt);
-      // document.getElementById("StatusTextConnection").innerHTML = "Status" + (isServer ? "(server)" : "(client)") + ": " + new Date().getHours() + ":" + new Date().getMinutes() + ":" + new Date().getSeconds();
-      // document.getElementById("BtnServerText").innerHTML = "Disconnect";
-      // document.getElementById("BtnClientText").innerHTML = "Disconnect";
-      // while(true){
-        // if(allEvt<60) return;
-
-        // let evt = allEvt[0];
-
-        allEvt.push(evt);
-
-        if(allEvt.length < 1500) return;
-
+    function processMessage(){
+      let evt;
+      // console.log("EVT");
+       //if(allEvt.length < 1) return;
+      //console.log("EVT2");
         StopLoading();
 
         evt = allEvt[0];
@@ -347,6 +385,21 @@ $.ajax(settings).done(function (response) {
             // document.getElementById("StatusTextString").innerHTML = "(string)" + stringData;
           }
         }
+    }
+
+    function MessageReceived(evt){
+      // console.log("evt",evt);
+      // document.getElementById("StatusTextConnection").innerHTML = "Status" + (isServer ? "(server)" : "(client)") + ": " + new Date().getHours() + ":" + new Date().getMinutes() + ":" + new Date().getSeconds();
+      // document.getElementById("BtnServerText").innerHTML = "Disconnect";
+      // document.getElementById("BtnClientText").innerHTML = "Disconnect";
+      // while(true){
+        // if(allEvt<60) return;
+
+        // let evt = allEvt[0];
+
+        allEvt.push(evt);
+        //processMessage();
+        setInterval(processMessage, 0.005);
       // }
     }
 

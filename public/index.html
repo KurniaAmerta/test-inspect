@@ -112,7 +112,7 @@
         document.getElementById("notFoundText").innerHTML = "";
         if(response.isWin!=null){
           console.log("TRUEE");
-          $("#myHref").attr("href", "https://bog-inspectator-hmh449p7c-kurniaamerta.vercel.app/match/"+response.isWin);
+          $("#myHref").attr("href", "https://bog-inspectator.vercel.app/match/"+response.isWin);
           if(response.isWin!==undefined) tourIdTemp=response.isWin
           
           $( "#myModal" ).show();
@@ -122,7 +122,7 @@
       }
       
       else{
-        $("#myHref").attr("href", "https://bog-inspectator-hmh449p7c-kurniaamerta.vercel.app/match/complete"+tourIdTemp);
+        $("#myHref").attr("href", "https://bog-inspectator.vercel.app/match/complete"+tourIdTemp);
         $( "#myModal" ).show();
         //window.open("https://bog-inspectator-9jd12ieeo-kurniaamerta.vercel.app/matchcomplete"+tourIdTemp)
         clearInterval(interval);

@@ -144,11 +144,17 @@
     document.getElementById("loading").style.display = "none";
   }
 
+  let allEvtImg = [];
+  let allEvtAudio = [];
+
   function Reconnect(){
     if(mute){ 
       document.getElementById("mute").innerHTML = "Mute";
       CloseConnectionMute();
       ConnectAsClient();
+
+      allEvtImg = [];
+      allEvtAudio = [];
     }
     else{
       document.getElementById("mute").innerHTML = "Unmute";
@@ -157,8 +163,6 @@
   }
 
   ConnectAsClient();
-
-  let allEvt = [];
 
   var enc = new TextEncoder(); // always utf-8
 
@@ -277,6 +281,12 @@
       RegisterNetworkType();
       //setInterval(processMessage, 0.005);
       console.log("**connected to server");
+      // setInterval(processMessage, 1);
+      // while(true){
+      //   processMessage();
+      // }
+      setInterval(processMessageImage, 1000/30);
+      setInterval(processMessageAudio, 1000/30);
     });
 
     ws.onclose = function (evt){
@@ -289,23 +299,40 @@
       ResetButtons();
     }
 
-    function processMessage(){
-      let evt;
-      // console.log("EVT");
-       //if(allEvt.length < 1) return;
-      //console.log("EVT2");
+    function processMessageImage(){
+      // console.log("all image length",allEvtImg.length);
+      if(allEvtImg.length > 100){
+        ProcessImageData(allEvtImg[0].data, allEvtImg[0].mode);
+        allEvtImg.shift();
+      }
+    }
+
+    function processMessageAudio(){
+      // console.log("all audio length",allEvtAudio.length);
+      if(allEvtAudio.length > 100){
+        ProcessAudioData(allEvtAudio[0].data, allEvtAudio[0].mode);
+        allEvtAudio.shift();
+      }
+    }
+
+    function processMessage(evt){
+      // let evt;
+        
+      // if(allEvt.length>3000){
+        // console.log("check length", allEvt.length);
+
         StopLoading();
 
-        evt = allEvt[0];
+        // evt = allEvt[0];
 
-        allEvt.shift();
+        // allEvt.shift();
 
         var data = evt.data;
 
-        if(typeof evt.data === "string")
-        {
-          //console.log('string data!');
-        }
+        // if(typeof evt.data === "string")
+        // {
+        //   //console.log('string data!');
+        // }
 
         if(evt.data instanceof ArrayBuffer)
         {
@@ -341,10 +368,11 @@
                 //----------------add byte----------------
                 dataByte_img = CombineInt8Array(dataByte_img, _byteData.slice(18, _byteData.length), _offset);
                 //----------------add byte----------------
-
+                // console.log("img ready",ReadyToGetFrame_aud);
                 if (ReadyToGetFrame_img)
                 {
-                  if (receivedLength_img == dataLength_img) ProcessImageData(dataByte_img, _GZipMode);
+                  // if (receivedLength_img == dataLength_img) ProcessImageData(dataByte_img, _GZipMode);
+                  if (receivedLength_img == dataLength_img) allEvtImg.push({ "data":dataByte_img, "mode":_GZipMode });
                 }
               }
               else if (_label == label_aud)
@@ -364,9 +392,11 @@
                 //----------------add byte----------------
                 dataByte_aud = CombineInt8Array(dataByte_aud, _byteData.slice(18, _byteData.length), _offset);
                 //----------------add byte----------------
+                // console.log("audio ready",ReadyToGetFrame_aud);
                 if (ReadyToGetFrame_aud)
                 {
-                  if (receivedLength_aud == dataLength_aud) ProcessAudioData(dataByte_aud, _GZipMode);
+                  // if (receivedLength_aud == dataLength_aud) ProcessAudioData(dataByte_aud, _GZipMode);
+                  if (receivedLength_aud == dataLength_aud) allEvtAudio.push({ "data": dataByte_aud, "mode":_GZipMode })
                 }
               }
             }
@@ -385,6 +415,7 @@
             // document.getElementById("StatusTextString").innerHTML = "(string)" + stringData;
           }
         }
+      // }
     }
 
     function MessageReceived(evt){
@@ -397,9 +428,10 @@
 
         // let evt = allEvt[0];
 
-        allEvt.push(evt);
-        //processMessage();
-        setInterval(processMessage, 0.005);
+        // allEvt.push(evt);
+        
+        processMessage(evt);
+        // setInterval(processMessage, 1);
       // }
     }
 

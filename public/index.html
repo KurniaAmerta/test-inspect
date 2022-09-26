@@ -181,7 +181,7 @@
   var SourceSampleRate = 44100;
   var SourceChannels = 1;
   var ABuffer = new Float32Array(0);
-
+  var isNotBuffering;
   var ws;
   var isServer;
 
@@ -286,8 +286,11 @@
       // while(true){
       //   processMessage();
       // }
-      setInterval(processMessageImage, 1000/60);
-      setInterval(processMessageAudio, 1000/60);
+      if (isNotBuffering == false) isNotBuffering = allEvtImg.length > 100;
+      if (isNotBuffering){
+        setInterval(processMessageImage, 1000/60);
+        setInterval(processMessageAudio, 1000/60);
+      }
     });
 
     ws.onclose = function (evt){
@@ -299,15 +302,19 @@
       CloseConnection();
       ResetButtons();
     }
-
+    
+    
     // let waitTolerant = 0;
     function processMessageImage(){
       // console.log("all image length",allEvtImg.length);
-      if(allEvtImg.length > 100 || isDisconnect){
+      if(allEvtImg.length > 0 || isDisconnect){
         console.log("allEvtImg", allEvtImg.length);
         if(allEvtImg.length === 0) return; //location.reload();
         ProcessImageData(allEvtImg[0].data, allEvtImg[0].mode);
         allEvtImg.shift();
+      }
+      else{
+        isNotBuffering = false;
       }
       // if(waitTolerant === 6000) location.reload();
     }
@@ -319,6 +326,9 @@
         if(allEvtAudio.length === 0) return; //location.reload();
         ProcessAudioData(allEvtAudio[0].data, allEvtAudio[0].mode);
         allEvtAudio.shift();
+      }
+      else{
+        isNotBuffering=false
       }
       // if(waitTolerant === 6000) location.reload();
     }

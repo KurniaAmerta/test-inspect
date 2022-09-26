@@ -115,16 +115,16 @@
           $("#myHref").attr("href", "https://bog-inspectator.vercel.app/match/"+response.isWin);
           if(response.isWin!==undefined) tourIdTemp=response.isWin
           
-          $( "#myModal" ).show();
+          // $( "#myModal" ).show();
           clearInterval(interval);
-          //window.open("https://bog-inspectator-9jd12ieeo-kurniaamerta.vercel.app/match/"+response.isWin) 
+          window.open("https://bog-inspectator.vercel.app/match/"+response.isWin, "_self") 
         }
       }
       
       else{
         $("#myHref").attr("href", "https://bog-inspectator.vercel.app/match/complete"+tourIdTemp);
-        $( "#myModal" ).show();
-        //window.open("https://bog-inspectator-9jd12ieeo-kurniaamerta.vercel.app/matchcomplete"+tourIdTemp)
+        // $( "#myModal" ).show();
+        window.open("https://bog-inspectator.vercel.app/match/complete"+tourIdTemp, "_self")
         clearInterval(interval);
       }
     }).fail(function() {
@@ -185,10 +185,12 @@
   var ws;
   var isServer;
 
+  let isDisconnect = false;
+
   function ResetButtons()
   {
-
-    location.reload();
+    isDisconnect = true;
+    // location.reload();
     // document.getElementById("BtnServerText").innerHTML = "Connect as Server";
     // document.getElementById("BtnClientText").innerHTML = "Connect as Client";
     // document.getElementById("StatusTextConnection").innerHTML = "Status: no connection";
@@ -298,20 +300,27 @@
       ResetButtons();
     }
 
+    // let waitTolerant = 0;
     function processMessageImage(){
       // console.log("all image length",allEvtImg.length);
-      if(allEvtImg.length > 100){
+      if(allEvtImg.length > 100 || isDisconnect){
+        console.log("allEvtImg", allEvtImg.length);
+        if(allEvtImg.length === 0) return; //location.reload();
         ProcessImageData(allEvtImg[0].data, allEvtImg[0].mode);
         allEvtImg.shift();
       }
+      // if(waitTolerant === 6000) location.reload();
     }
 
     function processMessageAudio(){
       // console.log("all audio length",allEvtAudio.length);
-      if(allEvtAudio.length > 100){
+      if(allEvtAudio.length > 100 || isDisconnect){
+        console.log("allEvtAudio", allEvtAudio.length);
+        if(allEvtAudio.length === 0) return; //location.reload();
         ProcessAudioData(allEvtAudio[0].data, allEvtAudio[0].mode);
         allEvtAudio.shift();
       }
+      // if(waitTolerant === 6000) location.reload();
     }
 
     function processMessage(evt){

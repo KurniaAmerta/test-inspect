@@ -266,6 +266,9 @@
 
   let isDisconnect = false;
 
+  let tolerant = 10;
+  let tolerantRepeat = -1;
+
   function ResetButtons()
   {
     isDisconnect = true;
@@ -483,14 +486,13 @@
           streamerAudioFPS = 0;
       }
     
-    let tolerant = 10;
-    let tolerantRepeat = -1;
+    
     // let waitTolerant = 0;
     function processMessageImage(){
       // console.log("all image length",allEvtImg.length);
       //if(allEvtImg.length > 100 || isDisconnect){
       if(allEvtImg.length > 0 || isDisconnect){
-        console.log("allEvtImg", allEvtImg.length);
+        console.log("allEvtImg", allEvtImg.length, tolerantRepeat);
 
         // if(isDisconnect){ 
           if(tolerantRepeat === -1) tolerantRepeat = allEvtImg.length;

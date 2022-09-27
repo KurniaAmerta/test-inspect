@@ -463,7 +463,17 @@
           streamerVideoFPS += 0.023;
           if (streamerVideoFPS < avgStreamerVideoFPS) return;
 
-          console.log("allEvtImg", allEvtImg.length);
+          console.log("allEvtImg", allEvtImg.length, tolerantRepeat);
+
+          if(tolerantRepeat === -1) tolerantRepeat = allEvtImg.length;
+          else if(tolerantRepeat === allEvtImg.length) tolerant--;
+          else{ 
+            tolerant = 10;
+            tolerantRepeat = allEvtImg.length;
+          }
+
+          if(tolerant<=0) location.reload();
+
           if (!isNotBuffering) isNotBuffering = allEvtImg.length > 100;
           if (isNotBuffering) {
               processMessageImage();
@@ -495,14 +505,7 @@
         console.log("allEvtImg", allEvtImg.length, tolerantRepeat);
 
         // if(isDisconnect){ 
-          if(tolerantRepeat === -1) tolerantRepeat = allEvtImg.length;
-          else if(tolerantRepeat === allEvtImg.length) tolerant--;
-          else{ 
-            tolerant = 10;
-            tolerantRepeat = allEvtImg.length;
-          }
-
-          if(tolerant<=0 || allEvtImg.length === 0) location.reload();
+          
         // }
 
         if(allEvtImg.length === 0) return; //location.reload();

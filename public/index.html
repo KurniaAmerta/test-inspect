@@ -70,7 +70,7 @@
 <div class="container">
   <h3 style="text-align:center" class="text-white" style="background-color: #1A1B1E; font-size: 48px;" id="title"></h3>
   <h5 style="text-align:center" class="text-white" style="background-color: #1A1B1E; font-size: 48px;" id="stage"></h5>
-  <hr class="text-primary" style="margin: 10px 0;">
+  <hr class="text-primary" style="margin-top: 20px; margin-bottom: 10px;">
   <div class="row justify-content-md-center">
     <div class="col">
       <h1 style="text-align:center" class="text-white" style="background-color: #1A1B1E; font-size: 48px;" id="versus1"></h1>
@@ -129,8 +129,8 @@
   <h4 class="text-white" id="notFoundText"></h4>
 </div>
 
-  <canvas id="canvas"></canvas>
-  <hr style="color: rgb(44, 46, 51); border-top-width: 1px; opacity: 1;">
+  <!-- <canvas id="canvas"></canvas> -->
+  <hr style="color: rgb(44, 46, 51); border-top-width: 1px; opacity: 1; margin-top: 80px;">
     <div class="container">
       <!-- <footer class="row row-cols-1 row-cols-sm-2 row-cols-md-5 py-5 my-5 ">  -->
           <div class="d-flex flex-sm-row justify-content-between margin-left:0px;">
@@ -153,33 +153,48 @@
     "id": _id
   }),
 };
-  let tourIdTemp = _id;
+  let tourIdTemp = null;
+  let isLast = false;
   let linkurl;
   var interval = setInterval(function(){
     $.ajax(settings).done(function (response) {
+      console.log("tour id",tourIdTemp);
       if(!response.isDeleted){
-        console.log(response);
+        console.log("response data", response);
         document.getElementById("title").innerHTML = "Created by "+response.creator;
         document.getElementById("stage").innerHTML = "Stage "+response.stage;
         document.getElementById("versus1").innerHTML = response.player[0];
         document.getElementById("versus2").innerHTML = response.player[1];
         document.getElementById("notFoundText").innerHTML = "";
-        if(response.isWin!=null){
-          console.log("TRUEE");
-          $("#myHref").attr("href", "https://bog-inspectator.vercel.app/match/"+response.isWin);
-          if(response.isWin!==undefined) tourIdTemp=response.isWin
-          
-          // $( "#myModal" ).show();
-          clearInterval(interval);
-          window.open("https://bog-inspectator.vercel.app/match/"+response.isWin, "_self") 
-        }
+
+        if(response.tourId!==undefined && response.tourId !==null) tourIdTemp=response.tourId
+        isLast = response.isLast;
+
+        // if(response.isWin){
+        //   if(isLast){
+        //     window.open("https://bog-inspectator.vercel.app/match/complete"+tourIdTemp, "_self");
+        //     clearInterval(interval);
+        //   }
+        //   else{
+        //     console.log("TRUEE");
+        //     $("#myHref").attr("href", "https://bog-inspectator.vercel.app/match/"+tourIdTemp);
+            
+        //     // $( "#myModal" ).show();
+        //     window.open("https://bog-inspectator.vercel.app/match/"+tourIdTemp, "_self") 
+        //     clearInterval(interval);
+        //   }
+        // }
       }
-      
       else{
-        $("#myHref").attr("href", "https://bog-inspectator.vercel.app/match/complete"+tourIdTemp);
-        // $( "#myModal" ).show();
-        window.open("https://bog-inspectator.vercel.app/match/complete"+tourIdTemp, "_self")
-        clearInterval(interval);
+        if(isLast){
+          $("#myHref").attr("href", "https://bog-inspectator.vercel.app/match/complete"+tourIdTemp);
+          // $( "#myModal" ).show();
+          window.open("https://bog-inspectator.vercel.app/match/complete"+tourIdTemp, "_self")
+          clearInterval(interval);
+        }else{
+          window.open("https://bog-inspectator.vercel.app/match/"+tourIdTemp, "_self")
+          clearInterval(interval);
+        }
       }
     }).fail(function() {
       console.log( "error" );

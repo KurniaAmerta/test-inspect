@@ -263,9 +263,6 @@
 
     var avgStreamerAudioFPS;
     var lastStreamerAudioFPSTicks;
-    var audioPredictMax = 6;	
-    var audioPredict;	
-
 
   let isDisconnect = false;
 
@@ -373,7 +370,7 @@
         // }
         // $("#mute").show();
         lastStreamerVideoFPSTicks = lastStreamerAudioFPSTicks = new Date().getTime();
-        audioPredict = audioPredictMax;
+        
       //setInterval(processMessageImage, 1000/60);
       //setInterval(processMessageAudio, 1000/60);
       //setInterval(processImgAndAudio, 80);
@@ -488,17 +485,7 @@
       function processAudioBufferedV3() {
           console.log("streamerAudioFPS: " + streamerAudioFPS + " ** avgStreamerAudioFPS: " + avgStreamerAudioFPS);
           streamerAudioFPS += 0.023;
-          //if (streamerAudioFPS < avgStreamerVideoFPS) return;
-          if (streamerAudioFPS < avgStreamerVideoFPS)	
-          {	
-              if (audioPredict > 0)	
-              {	
-                  processMessageAudio(false);	
-                  audioPredict--;	
-              }	
-              return;	
-          }	
-          audioPredict = audioPredictMax;
+          if (streamerAudioFPS < avgStreamerVideoFPS) return;
 
           console.log("allEvtAudio", allEvtAudio.length);
           if (!isNotBuffering) isNotBuffering = allEvtAudio.length > 100;
@@ -535,37 +522,19 @@
       // if(waitTolerant === 6000) location.reload();
     }
 
-    // function processMessageAudio(){
-    //   // console.log("all audio length",allEvtAudio.length);
-    //   //if(allEvtAudio.length > 100 || isDisconnect){
-    //   if(allEvtAudio.length > 0 || isDisconnect){
-    //     console.log("allEvtAudio", allEvtAudio.length);
-    //     if(allEvtAudio.length === 0) return; //location.reload();
-    //     ProcessAudioData(allEvtAudio[0].data, allEvtAudio[0].mode);
-    //     allEvtAudio.shift();
-    //   }
-    //   else {
-    //       isNotBuffering = false;
-    //   }
-    //   // if(waitTolerant === 6000) location.reload();
-    // }
-
-    function processMessageAudio(){	
-        processMessageAudio(true);	
-    }	
-    function processMessageAudio(removeAfterPlay) {	
-        // console.log("all audio length",allEvtAudio.length);	
-        //if(allEvtAudio.length > 100 || isDisconnect){	
-        if (allEvtAudio.length > 0 || isDisconnect) {	
-            console.log("allEvtAudio", allEvtAudio.length);	
-            if (allEvtAudio.length === 0) return; //location.reload();	
-            ProcessAudioData(allEvtAudio[0].data, allEvtAudio[0].mode);	
-            if (removeAfterPlay) allEvtAudio.shift();	
-        }	
-        else {	
-            isNotBuffering = false;	
-        }	
-        // if(waitTolerant === 6000) location.reload();	
+    function processMessageAudio(){
+      // console.log("all audio length",allEvtAudio.length);
+      //if(allEvtAudio.length > 100 || isDisconnect){
+      if(allEvtAudio.length > 0 || isDisconnect){
+        console.log("allEvtAudio", allEvtAudio.length);
+        if(allEvtAudio.length === 0) return; //location.reload();
+        ProcessAudioData(allEvtAudio[0].data, allEvtAudio[0].mode);
+        allEvtAudio.shift();
+      }
+      else {
+          isNotBuffering = false;
+      }
+      // if(waitTolerant === 6000) location.reload();
     }
 
     function processMessage(evt){

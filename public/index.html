@@ -354,8 +354,8 @@
       //setInterval(processMessageImage, 1000/60);
       //setInterval(processMessageAudio, 1000/60);
       //setInterval(processImgAndAudio, 80);
-        setInterval(processImgBufferedV2, 33);
-        setInterval(processAudioBufferedV2, 33);
+        setInterval(processImgBufferedV3, 33);
+        setInterval(processAudioBufferedV3, 33);
     });
 
     ws.onclose = function (evt){
@@ -382,38 +382,66 @@
     //  }
     //  }
 
-      function processImgBuffered() {
-          //console.log("streamerVideoFPS: ", streamerVideoFPS);
-          streamerVideoFPS -= 0.033;
-          if (streamerVideoFPS > 0) return;
+      // function processImgBuffered() {
+      //     //console.log("streamerVideoFPS: ", streamerVideoFPS);
+      //     streamerVideoFPS -= 0.033;
+      //     if (streamerVideoFPS > 0) return;
 
-          console.log("allEvtImg", allEvtImg.length);
-          if (!isNotBuffering) isNotBuffering = allEvtImg.length > 100;
-          if (isNotBuffering) {
-              processMessageImage();
-          }
+      //     console.log("allEvtImg", allEvtImg.length);
+      //     if (!isNotBuffering) isNotBuffering = allEvtImg.length > 100;
+      //     if (isNotBuffering) {
+      //         processMessageImage();
+      //     }
 
-          streamerVideoFPS = avgStreamerVideoFPS;
-      }
+      //     streamerVideoFPS = avgStreamerVideoFPS;
+      // }
 
-      function processAudioBuffered() {
-          //console.log("streamerAudioFPS: ", streamerAudioFPS);
-          streamerAudioFPS -= 0.033;
-          if (streamerAudioFPS > 0) return;
+      // function processAudioBuffered() {
+      //     //console.log("streamerAudioFPS: ", streamerAudioFPS);
+      //     streamerAudioFPS -= 0.033;
+      //     if (streamerAudioFPS > 0) return;
 
-          console.log("allEvtAudio", allEvtAudio.length);
-          if (!isNotBuffering) isNotBuffering = allEvtAudio.length > 100;
-          if (isNotBuffering) {
-              processMessageAudio();
-          }
+      //     console.log("allEvtAudio", allEvtAudio.length);
+      //     if (!isNotBuffering) isNotBuffering = allEvtAudio.length > 100;
+      //     if (isNotBuffering) {
+      //         processMessageAudio();
+      //     }
 
-          streamerAudioFPS = avgStreamerAudioFPS;
-      }
+      //     streamerAudioFPS = avgStreamerAudioFPS;
+      // }
 
-      function processImgBufferedV2() {
+      // function processImgBufferedV2() {
+      //     console.log("streamerVideoFPS: " + streamerVideoFPS + " ** avgStreamerVideoFPS: " + avgStreamerVideoFPS);
+      //     streamerVideoFPS += avgStreamerVideoFPS;
+      //     if (streamerVideoFPS < 0.065) return;
+
+      //     console.log("allEvtImg", allEvtImg.length);
+      //     if (!isNotBuffering) isNotBuffering = allEvtImg.length > 100;
+      //     if (isNotBuffering) {
+      //         processMessageImage();
+      //     }
+
+      //     streamerVideoFPS = 0;
+      // }
+
+      // function processAudioBufferedV2() {
+      //     console.log("streamerAudioFPS: " + streamerAudioFPS + " ** avgStreamerAudioFPS: " + avgStreamerAudioFPS);
+      //     streamerAudioFPS += avgStreamerAudioFPS;
+      //     if (streamerAudioFPS < 0.05) return;
+
+      //     console.log("allEvtAudio", allEvtAudio.length);
+      //     if (!isNotBuffering) isNotBuffering = allEvtAudio.length > 100;
+      //     if (isNotBuffering) {
+      //         processMessageAudio();
+      //     }
+
+      //     streamerAudioFPS = 0;
+      // }
+
+      function processImgBufferedV3() {
           console.log("streamerVideoFPS: " + streamerVideoFPS + " ** avgStreamerVideoFPS: " + avgStreamerVideoFPS);
-          streamerVideoFPS += avgStreamerVideoFPS;
-          if (streamerVideoFPS < 0.065) return;
+          streamerVideoFPS += 0.023;
+          if (streamerVideoFPS < avgStreamerVideoFPS) return;
 
           console.log("allEvtImg", allEvtImg.length);
           if (!isNotBuffering) isNotBuffering = allEvtImg.length > 100;
@@ -424,10 +452,10 @@
           streamerVideoFPS = 0;
       }
 
-      function processAudioBufferedV2() {
+      function processAudioBufferedV3() {
           console.log("streamerAudioFPS: " + streamerAudioFPS + " ** avgStreamerAudioFPS: " + avgStreamerAudioFPS);
-          streamerAudioFPS += avgStreamerAudioFPS;
-          if (streamerAudioFPS < 0.05) return;
+          streamerAudioFPS += 0.023;
+          if (streamerAudioFPS < avgStreamerVideoFPS) return;
 
           console.log("allEvtAudio", allEvtAudio.length);
           if (!isNotBuffering) isNotBuffering = allEvtAudio.length > 100;

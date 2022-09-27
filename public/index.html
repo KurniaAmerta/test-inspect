@@ -198,6 +198,9 @@
           }
         }
       }
+      if(tolerant<=0){
+        location.reload();
+      }
     }).fail(function() {
       console.log( "error" );
       document.getElementById("notFoundText").innerHTML = "Match not Found or The Match has Ended";
@@ -472,7 +475,7 @@
             tolerantRepeat = allEvtImg.length;
           }
 
-          if(tolerant<=0) location.reload();
+          // if(tolerant<=0) location.reload();
 
           if (!isNotBuffering) isNotBuffering = allEvtImg.length > 100;
           if (isNotBuffering) {

@@ -56,6 +56,12 @@
     left: 50%;
     transform: translate(-50%, 0);
   }
+  .mute-btn:hover{
+    color: white;
+  }
+  .mute-btn:focus{
+    color: white;
+  }
 </style>
 </head>
 <body style="background-color: #1A1B1E;" >
@@ -79,7 +85,6 @@
 </div>
 <div class="d-flex justify-content-center" id="notFound">
   <a href="https://bog-inspectator.vercel.app/" type="button" class="btn btn-outline-primary fa-solid fa-house"></a>
-  <h4 class="text-white" id="notFoundText"></h4>
 </div>
 <br>
 <!-- <center>
@@ -115,9 +120,14 @@
   <div class="container-image">
     <img id="DisplayImg" src="" width=45% />
     <!-- <button onclick="Reconnect();" type="button" class="btn btn-outline-light centered-top" id="mute" style="background-color: rgba(0,0,0,0.75);"><i class="fa-solid fa-volume-xmark"></i></button> -->
-    <button onclick="Reconnect();" type="button" class="btn btn-outline-light centered-bottom" id="mute" style="background-color: rgba(0,0,0,0.75);"><i class="fa-solid fa-volume-xmark"></i></button>
+    
+    <button onclick="Reconnect();" type="button" class="btn btn-outline-light centered-bottom mute-btn" id="mute" style="background-color: rgba(0,0,0,0.75); display: none;"><i class="fa-solid fa-volume-xmark"></i></button>
   </div>
 </center>
+
+<div class="d-flex justify-content-center" id="notFound">
+  <h4 class="text-white" id="notFoundText"></h4>
+</div>
 
   <canvas id="canvas"></canvas>
   <hr style="color: rgb(44, 46, 51); border-top-width: 1px; opacity: 1;">
@@ -192,7 +202,7 @@
 
   function Reconnect(){
     if(mute){ 
-      document.getElementById("mute").innerHTML = "Mute";
+      document.getElementById("mute").innerHTML = '<i class="fa-solid fa-volume-high"></i>';
       CloseConnectionMute();
       ConnectAsClient();
 
@@ -200,7 +210,7 @@
       allEvtAudio = [];
     }
     else{
-      document.getElementById("mute").innerHTML = "Unmute";
+      document.getElementById("mute").innerHTML = '<i class="fa-solid fa-volume-xmark"></i>';
     } 
     mute = !mute;
   }
@@ -228,6 +238,14 @@
   var isNotBuffering;
   var ws;
   var isServer;
+    var streamerVideoFPS;
+    var streamerAudioFPS;
+
+    var avgStreamerVideoFPS;
+    var lastStreamerVideoFPSTicks;
+
+    var avgStreamerAudioFPS;
+    var lastStreamerAudioFPSTicks;
 
   let isDisconnect = false;
 
@@ -329,12 +347,15 @@
       // setInterval(processMessage, 1);
       // while(true){
       //   processMessage();
-      // }
-      // if (isNotBuffering == false) isNotBuffering = allEvtImg.length > 100;
-      // if (isNotBuffering){
-        setInterval(processMessageImage, 1000/42);
-        setInterval(processMessageAudio, 1000/15);
-      // }
+        // }
+        // $("#mute").show();
+        lastStreamerVideoFPSTicks = lastStreamerAudioFPSTicks = new Date().getTime();
+
+      //setInterval(processMessageImage, 1000/60);
+      //setInterval(processMessageAudio, 1000/60);
+      //setInterval(processImgAndAudio, 80);
+        setInterval(processImgBufferedV2, 33);
+        setInterval(processAudioBufferedV2, 33);
     });
 
     ws.onclose = function (evt){
@@ -346,31 +367,109 @@
       CloseConnection();
       ResetButtons();
     }
-    
+
+    //function processImgAndAudio()
+    //{
+    //    console.log("streamerVideoFPS: ", streamerVideoFPS);
+    //    streamerVideoFPS -= 0.033;
+    //    if (streamerVideoFPS > 0) return;
+
+    //  console.log("allEvtImg", allEvtImg.length);
+    //  if (!isNotBuffering) isNotBuffering = allEvtImg.length > 100;
+    //  if (isNotBuffering) {
+    //        processMessageImage();
+    //        processMessageAudio();
+    //  }
+    //  }
+
+      function processImgBuffered() {
+          //console.log("streamerVideoFPS: ", streamerVideoFPS);
+          streamerVideoFPS -= 0.033;
+          if (streamerVideoFPS > 0) return;
+
+          console.log("allEvtImg", allEvtImg.length);
+          if (!isNotBuffering) isNotBuffering = allEvtImg.length > 100;
+          if (isNotBuffering) {
+              processMessageImage();
+          }
+
+          streamerVideoFPS = avgStreamerVideoFPS;
+      }
+
+      function processAudioBuffered() {
+          //console.log("streamerAudioFPS: ", streamerAudioFPS);
+          streamerAudioFPS -= 0.033;
+          if (streamerAudioFPS > 0) return;
+
+          console.log("allEvtAudio", allEvtAudio.length);
+          if (!isNotBuffering) isNotBuffering = allEvtAudio.length > 100;
+          if (isNotBuffering) {
+              processMessageAudio();
+          }
+
+          streamerAudioFPS = avgStreamerAudioFPS;
+      }
+
+      function processImgBufferedV2() {
+          console.log("streamerVideoFPS: " + streamerVideoFPS + " ** avgStreamerVideoFPS: " + avgStreamerVideoFPS);
+          streamerVideoFPS += avgStreamerVideoFPS;
+          if (streamerVideoFPS < 0.065) return;
+
+          console.log("allEvtImg", allEvtImg.length);
+          if (!isNotBuffering) isNotBuffering = allEvtImg.length > 100;
+          if (isNotBuffering) {
+              processMessageImage();
+          }
+
+          streamerVideoFPS = 0;
+      }
+
+      function processAudioBufferedV2() {
+          console.log("streamerAudioFPS: " + streamerAudioFPS + " ** avgStreamerAudioFPS: " + avgStreamerAudioFPS);
+          streamerAudioFPS += avgStreamerAudioFPS;
+          if (streamerAudioFPS < 0.05) return;
+
+          console.log("allEvtAudio", allEvtAudio.length);
+          if (!isNotBuffering) isNotBuffering = allEvtAudio.length > 100;
+          if (isNotBuffering) {
+              processMessageAudio();
+          }
+
+          streamerAudioFPS = 0;
+      }
     
     // let waitTolerant = 0;
     function processMessageImage(){
-      console.log("all image length",allEvtImg.length);
+      // console.log("all image length",allEvtImg.length);
+      //if(allEvtImg.length > 100 || isDisconnect){
       if(allEvtImg.length > 0 || isDisconnect){
         console.log("allEvtImg", allEvtImg.length);
+
         if(allEvtImg.length === 0) return; //location.reload();
         ProcessImageData(allEvtImg[0].data, allEvtImg[0].mode);
+
+        $("#mute").show();
+
         allEvtImg.shift();
       }
-      // else{
-      //   isNotBuffering = false;
-      // }
+      else{
+          isNotBuffering = false;
+          //allEvtAudio = [];
+      }
       // if(waitTolerant === 6000) location.reload();
     }
 
     function processMessageAudio(){
-      console.log("all audio length",allEvtAudio.length);
-      if(allEvtAudio.length > 500 || isDisconnect || isNotBuffering){
+      // console.log("all audio length",allEvtAudio.length);
+      //if(allEvtAudio.length > 100 || isDisconnect){
+      if(allEvtAudio.length > 0 || isDisconnect){
         console.log("allEvtAudio", allEvtAudio.length);
-        if(allEvtAudio.length > 100) isNotBuffering = true; 
-        else if(allEvtAudio.length === 0){ isNotBuffering = false; return; } //location.reload();
+        if(allEvtAudio.length === 0) return; //location.reload();
         ProcessAudioData(allEvtAudio[0].data, allEvtAudio[0].mode);
         allEvtAudio.shift();
+      }
+      else {
+          isNotBuffering = false;
       }
       // if(waitTolerant === 6000) location.reload();
     }
@@ -432,7 +531,14 @@
                 if (ReadyToGetFrame_img)
                 {
                   // if (receivedLength_img == dataLength_img) ProcessImageData(dataByte_img, _GZipMode);
-                  if (receivedLength_img == dataLength_img) allEvtImg.push({ "data":dataByte_img, "mode":_GZipMode });
+                    if (receivedLength_img == dataLength_img) {
+                        allEvtImg.push({ "data": dataByte_img, "mode": _GZipMode });
+
+                        var miliSecs = new Date().getTime();
+                        //console.log("miliSecs: " + miliSecs + " ** avgStreamerVideoFPS: " + avgStreamerVideoFPS);
+                        avgStreamerVideoFPS = (miliSecs - lastStreamerVideoFPSTicks) * 0.001;
+                        lastStreamerVideoFPSTicks = miliSecs;
+                    }
                 }
               }
               else if (_label == label_aud)
@@ -456,7 +562,15 @@
                 if (ReadyToGetFrame_aud)
                 {
                   // if (receivedLength_aud == dataLength_aud) ProcessAudioData(dataByte_aud, _GZipMode);
-                  if (receivedLength_aud == dataLength_aud) allEvtAudio.push({ "data": dataByte_aud, "mode":_GZipMode })
+                    if (receivedLength_aud == dataLength_aud)
+                    {
+                        allEvtAudio.push({ "data": dataByte_aud, "mode": _GZipMode })
+
+                        var miliSecs = new Date().getTime();
+                        //console.log("miliSecs: " + miliSecs + " ** avgStreamerAudioFPS: " + avgStreamerAudioFPS);
+                        avgStreamerAudioFPS = (miliSecs - lastStreamerAudioFPSTicks) * 0.001;
+                        lastStreamerAudioFPSTicks = miliSecs;
+                    }
                 }
               }
             }
@@ -600,7 +714,7 @@
 
         // document.getElementById("StatusTextVideoInfo").innerHTML = "info: " + img.width + "x" + img.height + " | " + (_GZipMode ? ("Zip("+Math.round((_byte.length/bytes.length) * 100) + "%)") : "Raw");
         // document.getElementById("StatusTextVideo").innerHTML = "(kB)" + Math.round(_byte.length/1000);
-      }
+        }
     }
   }
 

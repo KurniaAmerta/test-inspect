@@ -170,9 +170,9 @@
         if(response.tourId!==undefined && response.tourId !==null) tourIdTemp=response.tourId
         isLast = response.isLast;
 
-        // if(tolerant<=0){
-        //   location.reload();
-        // }
+        if(tolerant<=0 && allEvtImg.length === 0){
+          location.reload();
+        }
 
         // if(response.isWin){
         //   if(isLast){

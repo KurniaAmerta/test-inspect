@@ -185,7 +185,7 @@
         //   }
         // }
       }
-      else{
+      else if(response.isDeleted === null || response.isDeleted === undefined){
         if(allEvtImg.length === 0){
           if(isLast){
             $("#myHref").attr("href", "https://bog-inspectator.vercel.app/match/complete"+tourIdTemp);
@@ -197,6 +197,9 @@
             clearInterval(interval);
           }
         }
+      }
+      else if(tolerant<=0){
+        location.reload();
       }
     }).fail(function() {
       console.log( "error" );
@@ -472,7 +475,7 @@
             tolerantRepeat = allEvtImg.length;
           }
 
-          if(tolerant<=0) location.reload();
+          // if(tolerant<=0) location.reload();
 
           if (!isNotBuffering) isNotBuffering = allEvtImg.length > 100;
           if (isNotBuffering) {

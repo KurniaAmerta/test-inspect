@@ -492,7 +492,7 @@
       if(allEvtImg.length > 0 || isDisconnect){
         console.log("allEvtImg", allEvtImg.length);
 
-        if(isDisconnect){ 
+        // if(isDisconnect){ 
           if(tolerantRepeat === -1) tolerantRepeat = allEvtImg.length;
           else if(tolerantRepeat === allEvtImg.length) tolerant--;
           else{ 
@@ -500,8 +500,8 @@
             tolerantRepeat = allEvtImg.length;
           }
 
-          if(tolerant<=0) location.reload();
-        }
+          if(tolerant<=0 || allEvtImg.length === 0) location.reload();
+        // }
 
         if(allEvtImg.length === 0) return; //location.reload();
         ProcessImageData(allEvtImg[0].data, allEvtImg[0].mode);

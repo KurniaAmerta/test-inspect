@@ -203,7 +203,7 @@
         }
       }
     }).fail(function() {
-      console.log( "error" );
+      // console.log( "error" );
       document.getElementById("notFoundText").innerHTML = "Match not Found or The Match has Ended";
     });
   }, 5000);
@@ -378,8 +378,10 @@
       //setInterval(processMessageImage, 1000/60);
       //setInterval(processMessageAudio, 1000/60);
       //setInterval(processImgAndAudio, 80);
-        setInterval(processImgBufferedV3, 33);
-        setInterval(processAudioBufferedV3, 33);
+        setInterval(processImgBufferedV3, 30);
+        setInterval(processAudioBufferedV3, 30);
+        // setInterval(processImgBufferedV3, 33);
+        // setInterval(processAudioBufferedV3, 33);
     });
 
     ws.onclose = function (evt){
@@ -463,11 +465,12 @@
       // }
 
       function processImgBufferedV3() {
-          console.log("streamerVideoFPS: " + streamerVideoFPS + " ** avgStreamerVideoFPS: " + avgStreamerVideoFPS);
-          streamerVideoFPS += 0.023;
+          console.log("streamerVideoFPS: " + streamerVideoFPS + " ** avgStreamerVideoFPS: " + avgStreamerVideoFPS, "img length:", allEvtImg.length);
+          streamerVideoFPS += 0.03;//0.023;
+          if(allEvtImg.length>100) streamerVideoFPS += 1;
           if (streamerVideoFPS < avgStreamerVideoFPS) return;
 
-          console.log("allEvtImg", allEvtImg.length, tolerantRepeat);
+          // console.log("allEvtImg", allEvtImg.length, tolerantRepeat);
 
           if(tolerantRepeat === -1) tolerantRepeat = allEvtImg.length;
           else if(tolerantRepeat === allEvtImg.length) tolerant--;
@@ -487,11 +490,12 @@
       }
 
       function processAudioBufferedV3() {
-          console.log("streamerAudioFPS: " + streamerAudioFPS + " ** avgStreamerAudioFPS: " + avgStreamerAudioFPS);
-          streamerAudioFPS += 0.023;
-          if (streamerAudioFPS < avgStreamerVideoFPS) return;
+          // console.log("streamerAudioFPS: " + streamerAudioFPS + " ** avgStreamerAudioFPS: " + avgStreamerAudioFPS);
+          streamerAudioFPS += 0.03;//0.023;
+          if(allEvtAudio.length>100) streamerAudioFPS += 1;
+          if (streamerAudioFPS < avgStreamerAudioFPS) return;
 
-          console.log("allEvtAudio", allEvtAudio.length);
+          // console.log("allEvtAudio", allEvtAudio.length);
           if (!isNotBuffering) isNotBuffering = allEvtAudio.length > 100;
           if (isNotBuffering || tolerant<=0) {
               processMessageAudio();
@@ -506,7 +510,7 @@
       // console.log("all image length",allEvtImg.length);
       //if(allEvtImg.length > 100 || isDisconnect){
       if(allEvtImg.length > 0 || isDisconnect){
-        console.log("allEvtImg", allEvtImg.length, tolerantRepeat);
+        // console.log("allEvtImg", allEvtImg.length, tolerantRepeat);
 
         // if(isDisconnect){ 
           
@@ -530,7 +534,7 @@
       // console.log("all audio length",allEvtAudio.length);
       //if(allEvtAudio.length > 100 || isDisconnect){
       if(allEvtAudio.length > 0 || isDisconnect){
-        console.log("allEvtAudio", allEvtAudio.length);
+        // console.log("allEvtAudio", allEvtAudio.length);
         if(allEvtAudio.length === 0) return; //location.reload();
         ProcessAudioData(allEvtAudio[0].data, allEvtAudio[0].mode);
         allEvtAudio.shift();

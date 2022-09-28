@@ -475,7 +475,7 @@
           streamerVideoFPS += 0.023;
           if(allEvtImg.length>200){
             console.log("faster image:", allEvtImg.length); 
-            streamerVideoFPS += 0.01;
+            streamerVideoFPS += 0.1;
           }
           if (streamerVideoFPS < avgStreamerVideoFPS) return;
 
@@ -503,7 +503,7 @@
           streamerAudioFPS += 0.023;
           if(allEvtAudio.length>200){ 
             console.log("faster audio:", allEvtAudio.length);
-            streamerAudioFPS += 0.01;
+            streamerAudioFPS += 0.1;
           }
           if (streamerAudioFPS < avgStreamerAudioFPS) return;
 

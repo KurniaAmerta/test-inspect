@@ -473,7 +473,10 @@
       function processImgBufferedV3() {
           console.log("streamerVideoFPS: " + streamerVideoFPS + " ** avgStreamerVideoFPS: " + avgStreamerVideoFPS, "img length:", allEvtImg.length);
           streamerVideoFPS += 0.023;
-          if(allEvtImg.length>100) streamerVideoFPS += 1;
+          if(allEvtImg.length>200){
+            console.log("faster image:", allEvtImg.length); 
+            streamerVideoFPS += 0.01;
+          }
           if (streamerVideoFPS < avgStreamerVideoFPS) return;
 
           // console.log("allEvtImg", allEvtImg.length, tolerantRepeat);
@@ -488,7 +491,7 @@
           // if(tolerant<=0) location.reload();
 
           if (!isNotBuffering) isNotBuffering = allEvtImg.length > 100;
-          if (isNotBuffering || tolerant<=0) {
+          if (isNotBuffering || tolerant<=0 || isDisconnect) {
               processMessageImage();
           }
 
@@ -498,12 +501,15 @@
       function processAudioBufferedV3() {
           // console.log("streamerAudioFPS: " + streamerAudioFPS + " ** avgStreamerAudioFPS: " + avgStreamerAudioFPS);
           streamerAudioFPS += 0.023;
-          if(allEvtAudio.length>100) streamerAudioFPS += 1;
+          if(allEvtAudio.length>200){ 
+            console.log("faster audio:", allEvtAudio.length);
+            streamerAudioFPS += 0.01;
+          }
           if (streamerAudioFPS < avgStreamerAudioFPS) return;
 
           // console.log("allEvtAudio", allEvtAudio.length);
           if (!isNotBuffering) isNotBuffering = allEvtAudio.length > 100;
-          if (isNotBuffering || tolerant<=0) {
+          if (isNotBuffering || tolerant<=0 || isDisconnect) {
               processMessageAudio();
           }
 

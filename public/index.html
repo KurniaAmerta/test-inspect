@@ -170,7 +170,11 @@
         if(response.tourId!==undefined && response.tourId !==null) tourIdTemp=response.tourId
         isLast = response.isLast;
 
-        if(tolerant<=0 && allEvtImg.length === 0){
+        // if(tolerant<=0 && allEvtImg.length === 0){
+        //   location.reload();
+        // }
+
+        if(Number(new Date()) - timeTolerant > 3000 && allEvtImg.length === 0){
           location.reload();
         }
 
@@ -272,6 +276,8 @@
 
   let tolerant = 10;
   let tolerantRepeat = -1;
+
+  let timeTolerant = Number(new Date());
 
   function ResetButtons()
   {
@@ -378,10 +384,10 @@
       //setInterval(processMessageImage, 1000/60);
       //setInterval(processMessageAudio, 1000/60);
       //setInterval(processImgAndAudio, 80);
-        setInterval(processImgBufferedV3, 30);
-        setInterval(processAudioBufferedV3, 30);
-        // setInterval(processImgBufferedV3, 33);
-        // setInterval(processAudioBufferedV3, 33);
+        // setInterval(processImgBufferedV3, 30);
+        // setInterval(processAudioBufferedV3, 30);
+        setInterval(processImgBufferedV3, 33);
+        setInterval(processAudioBufferedV3, 33);
     });
 
     ws.onclose = function (evt){
@@ -466,7 +472,7 @@
 
       function processImgBufferedV3() {
           console.log("streamerVideoFPS: " + streamerVideoFPS + " ** avgStreamerVideoFPS: " + avgStreamerVideoFPS, "img length:", allEvtImg.length);
-          streamerVideoFPS += 0.03;//0.023;
+          streamerVideoFPS += 0.023;
           if(allEvtImg.length>100) streamerVideoFPS += 1;
           if (streamerVideoFPS < avgStreamerVideoFPS) return;
 
@@ -491,7 +497,7 @@
 
       function processAudioBufferedV3() {
           // console.log("streamerAudioFPS: " + streamerAudioFPS + " ** avgStreamerAudioFPS: " + avgStreamerAudioFPS);
-          streamerAudioFPS += 0.03;//0.023;
+          streamerAudioFPS += 0.023;
           if(allEvtAudio.length>100) streamerAudioFPS += 1;
           if (streamerAudioFPS < avgStreamerAudioFPS) return;
 
@@ -674,7 +680,7 @@
         // let evt = allEvt[0];
 
         // allEvt.push(evt);
-        
+        timeTolerant = Number(new Date());
         processMessage(evt);
         // setInterval(processMessage, 1);
       // }

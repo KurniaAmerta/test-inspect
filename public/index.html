@@ -27,11 +27,11 @@
   {
     text-align:left;
   }
-  .top-right {
+  /* .top-right {
     position: absolute;
     top: 8px;
     right: 530px;
-  }
+  } */
 
   .bottom-right {
     position: absolute;
@@ -50,10 +50,16 @@
     left: 50%;
     transform: translate(-50%, -50%);
   }
-  .centered-bottom {
+  .centered-bottom-right{
     position: absolute;
     bottom: 2%;
-    left: 50%;
+    left: 52%;
+    transform: translate(-50%, 0);
+  }
+  .centered-bottom-left {
+    position: absolute;
+    bottom: 2%;
+    left:48%;
     transform: translate(-50%, 0);
   }
   .mute-btn:hover{
@@ -62,12 +68,28 @@
   .mute-btn:focus{
     color: white;
   }
+  .fullscreen-btn{
+    color: white;
+    /* background-image: url('./images/FullScreen.png');
+    background-size: 29px;
+    size: 10px; */
+  }
+  .backgroundvid {
+position: fixed; 
+left: 0; top: 0;
+/* margin: auto; */
+min-width: 100%; min-height: 100%;
+/* width: 90%;  */
+/* margin-left: 100px; */
+/* height: 90%; z-index: -100; */
+background: url(polina.jpg) no-repeat;
+background-size: cover;
+}
 </style>
 </head>
-<body style="background-color: #1A1B1E;" >
-</br>
+<body style="background-color: #1A1B1E;" id="bodyIndex" >
 
-<div class="container">
+<div class="container" id="headerSpectator">
   <h3 style="text-align:center" class="text-white" style="background-color: #1A1B1E; font-size: 48px;" id="title"></h3>
   <h5 style="text-align:center" class="text-white" style="background-color: #1A1B1E; font-size: 48px;" id="stage"></h5>
   <hr class="text-primary" style="margin-top: 20px; margin-bottom: 10px;">
@@ -84,9 +106,9 @@
   </div>
 </div>
 <div class="d-flex justify-content-center" id="notFound">
-  <a href="https://bog-inspectator.vercel.app/" type="button" class="btn btn-outline-primary fa-solid fa-house"></a>
+  <a id= "houseIcon" href="https://bog-inspectator.vercel.app/" type="button" class="btn btn-outline-primary fa-solid fa-house"></a>
 </div>
-<br>
+<!-- <br> -->
 <!-- <center>
   <button onclick="Reconnect();" type="button" class="btn btn-outline-primary" id="mute">Unmute</button>
 </center> -->
@@ -117,11 +139,15 @@
   </div>
 </div>
 <center>
-  <div class="container-image">
-    <img id="DisplayImg" src="" width=45% />
-    <!-- <button onclick="Reconnect();" type="button" class="btn btn-outline-light centered-top" id="mute" style="background-color: rgba(0,0,0,0.75);"><i class="fa-solid fa-volume-xmark"></i></button> -->
+  <div class="container-image" id="VideoRender">
+    <img id="DisplayImg" src="" width="60%"/>
     
-    <button onclick="Reconnect();" type="button" class="btn btn-outline-light centered-bottom mute-btn" id="mute" style="background-color: rgba(0,0,0,0.75); display: none;"><i class="fa-solid fa-volume-xmark"></i></button>
+    <!-- <button onclick="Reconnect();" type="button" class="btn btn-outline-light centered-top" id="mute" style="background-color: rgba(0,0,0,0.75);"><i class="fa-solid fa-volume-xmark"></i></button> -->
+    <!-- <div class="d-flex justify-content-between"> -->
+      <button onclick="Reconnect();" type="button" class="btn btn-outline-light centered-bottom-right mute-btn" id="mute" style="background-color: rgba(0,0,0,0.75); display: none;"><i class="fa-solid fa-volume-xmark"></i></button>
+      <button onclick="OnClickedFullScreen();" type="button" class="btn btn-outline-light centered-bottom-left fullscreen-btn" id="fullscreen" style="background-color: rgba(0,0,0,0.75); display: block;"><i class="fa-solid fa-expand"></i></button>
+      <!-- </div>   -->
+  </div>  
   </div>
 </center>
 
@@ -130,8 +156,8 @@
 </div>
 
   <!-- <canvas id="canvas"></canvas> -->
-  <hr style="color: rgb(44, 46, 51); border-top-width: 1px; opacity: 1; margin-top: 80px;">
-    <div class="container">
+  <hr id = "borderFooter" style="color: rgb(44, 46, 51); border-top-width: 1px; opacity: 1; margin-top: 80px;">
+    <div id="footer"class="container">
       <!-- <footer class="row row-cols-1 row-cols-sm-2 row-cols-md-5 py-5 my-5 ">  -->
           <div class="d-flex flex-sm-row justify-content-between margin-left:0px;">
             <h1 style="color: #C1C2C5">B O G</h1>
@@ -142,6 +168,8 @@
 
 <script type="text/javascript">
   let _id = window.location.pathname.split('/')[1];
+  const playerDiv = document.getElementById('VideoRender');
+
   var settings = {
   "url": "https://bogreward.herokuapp.com/StreamData",
   "method": "POST",
@@ -213,6 +241,7 @@
   }, 5000);
 
   let mute = true;
+  let fullscreenDisplay = false;
 
   function CloseModal(){
 
@@ -238,6 +267,60 @@
       document.getElementById("mute").innerHTML = '<i class="fa-solid fa-volume-xmark"></i>';
     } 
     mute = !mute;
+  }
+
+  function OnClickedFullScreen(){
+    //playerDiv.style.width="65%";
+    
+    if (!document.fullscreenElement || !document.webkitFullscreenElement) {
+      if (document.documentElement.requestFullscreen) {
+        document.documentElement.requestFullscreen();
+      }
+      else if (document.documentElement.webkitRequestFullscreen) {
+        document.documentElement.webkitRequestFullscreen(Element.ALLOW_KEYBOARD_INPUT);
+      } else {
+        if (playerDiv.style.position == "absolute") {
+          playerDiv.style.position = "relative";
+        } else {
+          playerDiv.style.position = "absolute";
+        }
+      }
+    }
+    
+    document.addEventListener('webkitfullscreenchange', onFullscreenChange);
+    document.addEventListener('fullscreenchange', onFullscreenChange);
+
+    function onFullscreenChange() {
+      if (document.webkitFullscreenElement || document.fullscreenElement) {
+        playerDiv.style.position = "absolute";
+        document.getElementById("fullscreen").style.display = 'none';
+        
+        $(document).ready(function(){
+              $("#DisplayImg").removeClass("container-image");
+              $("#DisplayImg").addClass("backgroundvid");
+              document.getElementById("DisplayImg").style.width="100%";
+              document.getElementById("headerSpectator").style.display='none';
+              document.getElementById("notFoundText").style.display='none';
+              document.getElementById("houseIcon").style.display='none';
+              document.getElementById("footer").style.display='none';
+              document.getElementById("borderFooter").style.display='none';
+          });
+      }
+      else {
+        document.getElementById("fullscreen").style.display = 'block';
+        $(document).ready(function(){
+          playerDiv.style.position = "relative";
+              $("#DisplayImg").removeClass("backgroundvid");
+              $("#DisplayImg").addClass("container-image");
+              document.getElementById("DisplayImg").style.width="60%";
+              document.getElementById("headerSpectator").style.display='block';
+              document.getElementById("notFoundText").style.display='block';
+              document.getElementById("houseIcon").style.display='block';
+              document.getElementById("footer").style.display='block';
+              document.getElementById("borderFooter").style.display='block';
+          });
+      }
+    }
   }
 
   ConnectAsClient();
@@ -532,7 +615,7 @@
         ProcessImageData(allEvtImg[0].data, allEvtImg[0].mode);
 
         $("#mute").show();
-
+        $("fullscreen").show();
         allEvtImg.shift();
       }
       else{
